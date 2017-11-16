@@ -104,7 +104,7 @@ module.exports = function(
     command = 'npm';
     args = ['install', '--save', verbose && '--verbose'].filter(e => e);
   }
-  args.push('react', 'react-dom', 'react-router', 'react-router-dom');
+  args.push('react', 'react-dom');
 
   // Install additional template dependencies, if present
   const templateDependenciesPath = path.join(
@@ -133,6 +133,47 @@ module.exports = function(
       console.error(`\`${command} ${args.join(' ')}\` failed`);
       return;
     }
+  }
+
+  console.log(`Installing extra dependencies using ${command}...`);
+  console.log();
+
+  let extraDependencies = ['install', '--save', verbose && '--verbose'].filter(e => e);
+  extraDependencies.push('react-router', 'react-router-dom');
+
+  const extraProc = spawn.sync(command, extraDependencies, { stdio: 'inherit' });
+  if (extraProc.status !== 0) {
+    console.error(`\`${command} ${args.join(' ')}\` failed`);
+    return;
+  }
+
+  console.log(`Installing extra dev dependencies using ${command}...`);
+  console.log();
+
+  let extraDevDependencies = ['install', '--save-dev', verbose && '--verbose'].filter(e => e);
+  extraDependencies.push(
+    'babel-eslint',
+    'chai',
+    'enzyme', 
+    'enzyme-adapter-react-16',
+    'eslint', 
+    'eslint-config-airbnb',
+    'eslint-plugin-jsx-a11y',
+    'eslint-plugin-import',
+    'eslint-plugin-react',
+    'flow-bin',
+    'postcss-cssnext',
+    'postcss-import',
+    'react-test-renderer', 
+    'selenium-standalone',
+    'wdio-mocha-framework',
+    'webdriverio'
+  );
+
+  const extraDevProc = spawn.sync(command, extraDevDependencies, { stdio: 'inherit' });
+  if (extraDevProc.status !== 0) {
+    console.error(`\`${command} ${args.join(' ')}\` failed`);
+    return;
   }
 
   // Display the most elegant way to cd.
