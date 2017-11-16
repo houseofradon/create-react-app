@@ -135,10 +135,20 @@ module.exports = function(
     }
   }
 
+  let extraDependencies;
+  let extraDevDependencies;
+
+  if (useYarn) {
+    extraDependencies = ['add'];
+    extraDevDependencies = ['add', '--dev'];
+  } else {
+    extraDependencies = ['install', '--save', verbose && '--verbose'].filter(e => e);
+    extraDevDependencies = ['install', '--save-dev', verbose && '--verbose'].filter(e => e);
+  }
+
   console.log(`Installing extra dependencies using ${command}...`);
   console.log();
 
-  let extraDependencies = ['install', '--save', verbose && '--verbose'].filter(e => e);
   extraDependencies.push('react-router', 'react-router-dom');
 
   const extraProc = spawn.sync(command, extraDependencies, { stdio: 'inherit' });
@@ -150,8 +160,7 @@ module.exports = function(
   console.log(`Installing extra dev dependencies using ${command}...`);
   console.log();
 
-  let extraDevDependencies = ['install', '--save-dev', verbose && '--verbose'].filter(e => e);
-  extraDependencies.push(
+  extraDevDependencies.push(
     'babel-eslint',
     'chai',
     'enzyme', 

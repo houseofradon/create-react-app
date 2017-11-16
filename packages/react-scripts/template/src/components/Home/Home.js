@@ -1,9 +1,14 @@
+// @flow
 import React from 'react';
 
 import logo from './logo.svg';
 import './Home.css';
 
-const Home = () => (
+interface Props {
+  data: Object
+}
+
+const Home = (props: Props) => (
   <div className="Home">
     <header className="Home-header">
       <img src={logo} className="Home-logo" alt="logo" />
@@ -11,6 +16,7 @@ const Home = () => (
     </header>
     <p className="Home-intro">
           To get started, edit <code>src/Home.js</code> and save to reload.
+          {props.data}
     </p>
   </div>
 );
