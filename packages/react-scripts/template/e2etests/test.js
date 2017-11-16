@@ -7,6 +7,6 @@ describe('React App', () => {
     browser.url('http://localhost:3000/');
     const actualTitle = browser.getTitle();
 
-    expect(actualTitle).to.eql('React App');
+    expect(actualTitle).to.eql('Radon React App');
   });
 });
