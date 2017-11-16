@@ -41,6 +41,11 @@ module.exports = function(
     build: 'react-scripts build',
     test: 'react-scripts test --env=jsdom',
     eject: 'react-scripts eject',
+    flow: 'flow',
+    "selenium-setup": 'selenium-standalone install',
+    "selenium-start": 'selenium-standalone start',
+    "e2e-tests": 'wdio wdio.conf.js',
+    "e2e-tests-watch": 'wdio wdio.conf.js --watch',
   };
 
   fs.writeFileSync(
@@ -130,6 +135,56 @@ module.exports = function(
     }
   }
 
+  let extraDependencies;
+  let extraDevDependencies;
+
+  if (useYarn) {
+    extraDependencies = ['add'];
+    extraDevDependencies = ['add', '--dev'];
+  } else {
+    extraDependencies = ['install', '--save', verbose && '--verbose'].filter(e => e);
+    extraDevDependencies = ['install', '--save-dev', verbose && '--verbose'].filter(e => e);
+  }
+
+  console.log(`Installing extra dependencies using ${command}...`);
+  console.log();
+
+  extraDependencies.push('react-router', 'react-router-dom');
+
+  const extraProc = spawn.sync(command, extraDependencies, { stdio: 'inherit' });
+  if (extraProc.status !== 0) {
+    console.error(`\`${command} ${args.join(' ')}\` failed`);
+    return;
+  }
+
+  console.log(`Installing extra dev dependencies using ${command}...`);
+  console.log();
+
+  extraDevDependencies.push(
+    'babel-eslint',
+    'chai',
+    'enzyme', 
+    'enzyme-adapter-react-16',
+    'eslint', 
+    'eslint-config-airbnb',
+    'eslint-plugin-jsx-a11y',
+    'eslint-plugin-import',
+    'eslint-plugin-react',
+    'flow-bin',
+    'postcss-cssnext',
+    'postcss-import',
+    'react-test-renderer', 
+    'selenium-standalone',
+    'wdio-mocha-framework',
+    'webdriverio'
+  );
+
+  const extraDevProc = spawn.sync(command, extraDevDependencies, { stdio: 'inherit' });
+  if (extraDevProc.status !== 0) {
+    console.error(`\`${command} ${args.join(' ')}\` failed`);
+    return;
+  }
+
   // Display the most elegant way to cd.
   // This needs to handle an undefined originalDirectory for
   // backward compatibility with old global-cli's.
@@ -144,7 +199,14 @@ module.exports = function(
   const displayedCommand = useYarn ? 'yarn' : 'npm';
 
   console.log();
-  console.log(`Success! Created ${appName} at ${appPath}`);
+  console.log(`Success! Created ${appName} at ${appPath} with Radon specific scripts.`);
+  console.log('Included extra libraries are:');
+  console.log('Eslint with necessary plugins and configs');
+  console.log('Enzyme for unit tests');
+  console.log('End to end tests with selenium');
+  console.log('Flow');
+  console.log('PostCSS with cssnext and import plugins');
+  console.log();
   console.log('Inside that directory, you can run several commands:');
   console.log();
   console.log(chalk.cyan(`  ${displayedCommand} start`));
@@ -166,6 +228,44 @@ module.exports = function(
   );
   console.log(
     '    and scripts into the app directory. If you do this, you can’t go back!'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}flow`)
+  );
+  console.log(
+    '    Runs a flow linter. We suggest you to use VS Code with Flow Language Support plugin'
+  );
+  console.log(
+    '    to skip running this command and having flow linter built in your editor.'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}selenium-start`)
+  );
+  console.log(
+    '    Starts the selenium server'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}selenium-setup`)
+  );
+  console.log(
+    '    Runs the initial setup for selenium server'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}e2e-tests`)
+  );
+  console.log(
+    '    Runs the tests under ./e2etests folder on selenium server'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}e2e-tests-watch`)
+  );
+  console.log(
+    '    Starts a watcher for the tests under ./e2etests and runs after every change'
   );
   console.log();
   console.log('We suggest that you begin by typing:');
