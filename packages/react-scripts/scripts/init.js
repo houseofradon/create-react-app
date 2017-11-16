@@ -41,6 +41,11 @@ module.exports = function(
     build: 'react-scripts build',
     test: 'react-scripts test --env=jsdom',
     eject: 'react-scripts eject',
+    flow: 'flow',
+    "selenium-setup": 'selenium-standalone install',
+    "selenium-start": 'selenium-standalone start',
+    "e2e-tests": 'wdio wdio.conf.js',
+    "e2e-tests-watch": 'wdio wdio.conf.js --watch',
   };
 
   fs.writeFileSync(
@@ -144,7 +149,14 @@ module.exports = function(
   const displayedCommand = useYarn ? 'yarn' : 'npm';
 
   console.log();
-  console.log(`Success! Created ${appName} at ${appPath}`);
+  console.log(`Success! Created ${appName} at ${appPath} with Radon specific scripts.`);
+  console.log('Included extra libraries are:');
+  console.log('Eslint with necessary plugins and configs');
+  console.log('Enzyme for unit tests');
+  console.log('End to end tests with selenium');
+  console.log('Flow');
+  console.log('PostCSS with cssnext and import plugins');
+  console.log();
   console.log('Inside that directory, you can run several commands:');
   console.log();
   console.log(chalk.cyan(`  ${displayedCommand} start`));
@@ -166,6 +178,44 @@ module.exports = function(
   );
   console.log(
     '    and scripts into the app directory. If you do this, you can’t go back!'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}flow`)
+  );
+  console.log(
+    '    Runs a flow linter. We suggest you to use VS Code with Flow Language Support plugin'
+  );
+  console.log(
+    '    to skip running this command and having flow linter built in your editor.'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}selenium-start`)
+  );
+  console.log(
+    '    Starts the selenium server'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}selenium-setup`)
+  );
+  console.log(
+    '    Runs the initial setup for selenium server'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}e2e-tests`)
+  );
+  console.log(
+    '    Runs the tests under ./e2etests folder on selenium server'
+  );
+  console.log();
+  console.log(
+    chalk.cyan(`  ${displayedCommand} ${useYarn ? '' : 'run '}e2e-tests-watch`)
+  );
+  console.log(
+    '    Starts a watcher for the tests under ./e2etests and runs after every change'
   );
   console.log();
   console.log('We suggest that you begin by typing:');

@@ -1,0 +1,42 @@
+@font-face {
+	font-family: 'DLH Helvetica Medium';
+	src: url('../assets/fonts/HelveticaDLH-Medium.eot');
+	src: url('../assets/fonts/HelveticaDLH-Medium.eot?#iefix') format('embedded-opentype'),
+		url('../assets/fonts/HelveticaDLH-Medium.woff') format('woff'),
+		url('../assets/fonts/HelveticaDLH-Medium.ttf') format('truetype');
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'DLH Helvetica Light';
+	src: url('../assets/fonts/HelveticaDLH-Light.eot');
+	src: url('../assets/fonts/HelveticaDLH-Light.eot?#iefix') format('embedded-opentype'),
+		url('../assets/fonts/HelveticaDLH-Light.woff') format('woff'),
+		url('../assets/fonts/HelveticaDLH-Light.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@custom-media --x-small (width < 768px);
+@custom-media --small (width >= 768px) and (width < 1024px);
+@custom-media --medium (width >= 1024px) and (width < 1280px);
+@custom-media --large (width >= 1280px);
+
+:root {
+	/* Grid */
+	--max-width: 1280px;
+	--gutter-width: 1rem;
+
+	/* Typography */
+	--type-scale: 1rem;
+	--font-heading: 'DLH Helvetica Medium', sans-serif;
+	--font-body: 'DLH Helvetica Light', serif;
+	/* Colors */
+	--black: #262626;
+	--grey: #eee;
+	--darkGrey: #878787;
+	--lightGrey: #EDEDEF;
+	--lightGreen: #F5F5F5;
+	--primary: lightseagreen;
+}
