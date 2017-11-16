@@ -41,6 +41,11 @@ module.exports = function(
     build: 'react-scripts build',
     test: 'react-scripts test --env=jsdom',
     eject: 'react-scripts eject',
+    flow: 'flow',
+    "selenium-setup": 'selenium-standalone install',
+    "selenium-start": 'selenium-standalone start',
+    "e2e-tests": 'wdio wdio.conf.js',
+    "e2e-tests-watch": 'wdio wdio.conf.js --watch',
   };
 
   fs.writeFileSync(
