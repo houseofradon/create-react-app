@@ -1,19 +1,13 @@
 @font-face {
-	font-family: 'DLH Helvetica Medium';
-	src: url('../assets/fonts/HelveticaDLH-Medium.eot');
-	src: url('../assets/fonts/HelveticaDLH-Medium.eot?#iefix') format('embedded-opentype'),
-		url('../assets/fonts/HelveticaDLH-Medium.woff') format('woff'),
-		url('../assets/fonts/HelveticaDLH-Medium.ttf') format('truetype');
+	font-family: 'OpenSans Regular';
+	src: url('../assets/fonts/OpenSans-Regular.ttf') format('truetype');
 	font-weight: 500;
 	font-style: normal;
 }
 
 @font-face {
-	font-family: 'DLH Helvetica Light';
-	src: url('../assets/fonts/HelveticaDLH-Light.eot');
-	src: url('../assets/fonts/HelveticaDLH-Light.eot?#iefix') format('embedded-opentype'),
-		url('../assets/fonts/HelveticaDLH-Light.woff') format('woff'),
-		url('../assets/fonts/HelveticaDLH-Light.ttf') format('truetype');
+	font-family: 'OpenSans SemiBold';
+	src: url('../assets/fonts/OpenSans-SemiBold.ttf') format('truetype');
 	font-weight: 300;
 	font-style: normal;
 }
@@ -30,8 +24,9 @@
 
 	/* Typography */
 	--type-scale: 1rem;
-	--font-heading: 'DLH Helvetica Medium', sans-serif;
-	--font-body: 'DLH Helvetica Light', serif;
+	--font-heading: 'OpenSans SemiBold', sans-serif;
+	--font-body: 'OpenSans Regular', serif;
+	
 	/* Colors */
 	--black: #262626;
 	--grey: #eee;
