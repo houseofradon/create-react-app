@@ -335,7 +335,7 @@ Next we add a 'lint-staged' field to the `package.json`, for example:
 
 Now, whenever you make a commit, Prettier will format the changed files automatically. You can also run `./node_modules/.bin/prettier --single-quote --write "src/**/*.{js,jsx}"` to format your entire project for the first time.
 
-Next you might want to integrate Prettier in your favorite editor. Read the section on [Editor Integration](https://github.com/prettier/prettier#editor-integration) on the Prettier GitHub page.
+Next you might want to integrate Prettier in your favorite editor. Read the section on [Editor Integration](https://prettier.io/docs/en/editors.html) on the Prettier GitHub page.
 
 ## Changing the Page `<title>`
 
@@ -1572,12 +1572,9 @@ Use the following [`launch.json`](https://code.visualstudio.com/docs/editor/debu
       "name": "Debug CRA Tests",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",
-      "runtimeArgs": [
-        "--inspect-brk",
-        "test"
-      ],
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",      
       "args": [
+        "test",
         "--runInBand",
         "--no-cache",
         "--env=jsdom"
@@ -1816,7 +1813,7 @@ npm run analyze
 
 ## Deployment
 
-`npm run build` creates a `build` directory with a production build of your app. Set up your favourite HTTP server so that a visitor to your site is served `index.html`, and requests to static paths like `/static/js/main.<hash>.js` are served with the contents of the `/static/js/main.<hash>.js` file.
+`npm run build` creates a `build` directory with a production build of your app. Set up your favorite HTTP server so that a visitor to your site is served `index.html`, and requests to static paths like `/static/js/main.<hash>.js` are served with the contents of the `/static/js/main.<hash>.js` file.
 
 ### Static Server
 
@@ -2012,10 +2009,16 @@ For more information see [Add Firebase to your JavaScript Project](https://fireb
 **The step below is important!**<br>
 **If you skip it, your app will not deploy correctly.**
 
-Open your `package.json` and add a `homepage` field:
+Open your `package.json` and add a `homepage` field for your project:
 
-```js
+```json
   "homepage": "https://myusername.github.io/my-app",
+```
+
+or for a GitHub user page:
+
+```json
+  "homepage": "https://myusername.github.io",
 ```
 
 Create React App uses the `homepage` field to determine the root URL in the built HTML file.
@@ -2047,6 +2050,18 @@ Add the following scripts in your `package.json`:
 ```
 
 The `predeploy` script will run automatically before `deploy` is run.
+
+If you are deploying to a GitHub user page instead of a project page you'll need to make two
+additional modifications:
+
+1. First, change your repository's source branch to be any branch other than **master**.
+1. Additionally, tweak your `package.json` scripts to push deployments to **master**:
+```diff
+  "scripts": {
+    "predeploy": "npm run build",
+-   "deploy": "gh-pages -d build",
++   "deploy": "gh-pages -b master -d build",
+```
 
 #### Step 3: Deploy the site by running `npm run deploy`
 
