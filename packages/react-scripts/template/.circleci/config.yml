@@ -1,0 +1,175 @@
+version: 2
+
+jobs:
+  prepare:
+    docker: 
+      - image: circleci/node:8.9.1
+    working_directory: ~/radon
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/radon
+      - restore_cache:
+          key: yarn-dependencies-{{ checksum "package.json" }}
+      - run:
+          name: install dependencies
+          command: yarn install
+      - save_cache:
+          key: yarn-dependencies-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+            - ~/.cache/yarn
+      - persist_to_workspace:
+          root: .
+          paths: 
+            - .
+
+  test:
+    docker: 
+      - image: circleci/node:8.9.1
+    working_directory: ~/radon
+    steps:
+      - attach_workspace:
+          at: ~/radon
+      - run:
+          name: test
+          command: yarn test --coverage
+
+  flow:
+    docker: 
+      - image: circleci/node:8.9.1
+    working_directory: ~/radon
+    steps:
+      - attach_workspace:
+          at: ~/radon
+      - run:
+          name: flow
+          command: yarn flow
+
+  eslint:
+    docker: 
+      - image: circleci/node:8.9.1
+    working_directory: ~/radon
+    steps:
+      - attach_workspace:
+          at: ~/radon
+      - run:
+          name: eslint
+          command: ./node_modules/.bin/eslint .
+
+  build-staging:
+    docker: 
+      - image: circleci/node:8.9.1
+    working_directory: ~/radon
+    steps:
+      - attach_workspace:
+          at: ~/radon
+      - run:
+          name: add domain name variable
+          command: echo 'export REACT_APP_DOMAIN_NAME=https://XXXXXX' >> $BASH_ENV
+      - run:
+          name: build app
+          command: CI="" yarn build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+
+  build-production:
+    docker: 
+      - image: circleci/node:8.9.1
+    working_directory: ~/radon
+    steps:
+      - attach_workspace:
+          at: ~/radon
+      - run:
+          name: add domain name variable
+          command: echo 'export REACT_APP_DOMAIN_NAME=XXXXXX' >> $BASH_ENV
+      - run:
+          name: build app
+          command: CI="" yarn build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
+
+  deploy-staging:
+    machine:
+      enabled: true
+    working_directory: ~/radon
+    steps:
+      - attach_workspace:
+          at: ~/radon
+      - run:
+          name: gzip files
+          command: find build \( -iname '*' \) -exec gzip -9 -n {} \; -exec mv {}.gz {} \;
+      - run:
+          name: upload non-cached files to s3
+          command: aws s3 sync build s3://XXXXXX/ --region eu-central-1 --exclude "static/*" --cache-control "max-age=0" --content-encoding "gzip" --delete
+      - run:
+          name: upload cached files to s3
+          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --cache-control "max-age=2592000" --content-encoding "gzip" --delete
+
+  deploy-production:
+    machine:
+      enabled: true
+    working_directory: ~/radon
+    steps:
+      - attach_workspace:
+          at: ~/radon
+      - run:
+          name: gzip files
+          command: find build \( -iname '*' \) -exec gzip -9 -n {} \; -exec mv {}.gz {} \;
+      - run:
+          name: upload non-cached files to s3
+          command: aws s3 sync build s3://XXXXXX/ --region eu-central-1 --exclude "static/*" --cache-control "max-age=0" --content-encoding "gzip" --delete
+      - run:
+          name: upload cached files to s3
+          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --cache-control "max-age=2592000" --content-encoding "gzip" --delete
+
+workflows:
+  version: 2
+  build-test-and-deploy:
+    jobs:
+      - prepare
+      - test:
+          requires:
+            - prepare
+      - flow:
+          requires:
+            - prepare
+      - eslint:
+          requires:
+            - prepare
+      - build-staging:
+          requires:
+            - test
+            - flow
+            - eslint
+          filters:
+            branches:
+              only:
+                - develop
+      - build-production:
+          requires:
+            - test
+            - flow
+            - eslint
+          filters:
+            branches:
+              only:
+                - master
+      - deploy-staging:
+          requires:
+            - build-staging
+          filters:
+            branches:
+              only:
+                - develop
+      - deploy-production:
+          requires:
+            - build-production
+          filters:
+            branches:
+              only:
+                - master

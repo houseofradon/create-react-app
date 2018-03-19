@@ -149,7 +149,10 @@ module.exports = function(
   console.log(`Installing extra dependencies using ${command}...`);
   console.log();
 
-  extraDependencies.push('react-router', 'react-router-dom');
+  extraDependencies.push(
+    'react-router', 
+    'react-router-dom'
+  );
 
   const extraProc = spawn.sync(command, extraDependencies, { stdio: 'inherit' });
   if (extraProc.status !== 0) {
