@@ -3,7 +3,7 @@ version: 2
 jobs:
   prepare:
     docker: 
-      - image: circleci/node:8.9.1
+      - image: circleci/node:8.11.2
     working_directory: ~/radon
     steps:
       - checkout
@@ -26,7 +26,7 @@ jobs:
 
   test:
     docker: 
-      - image: circleci/node:8.9.1
+      - image: circleci/node:8.11.2
     working_directory: ~/radon
     steps:
       - attach_workspace:
@@ -37,7 +37,7 @@ jobs:
 
   flow:
     docker: 
-      - image: circleci/node:8.9.1
+      - image: circleci/node:8.11.2
     working_directory: ~/radon
     steps:
       - attach_workspace:
@@ -48,7 +48,7 @@ jobs:
 
   eslint:
     docker: 
-      - image: circleci/node:8.9.1
+      - image: circleci/node:8.11.2
     working_directory: ~/radon
     steps:
       - attach_workspace:
@@ -59,7 +59,7 @@ jobs:
 
   build-staging:
     docker: 
-      - image: circleci/node:8.9.1
+      - image: circleci/node:8.11.2
     working_directory: ~/radon
     steps:
       - attach_workspace:
@@ -67,6 +67,12 @@ jobs:
       - run:
           name: add domain name variable
           command: echo 'export REACT_APP_DOMAIN_NAME=https://XXXXXX' >> $BASH_ENV
+      # - run:
+      #     name: add google analytics variable
+      #     command: echo 'export REACT_APP_GOOGLE_ANALYTICS_ID=UA-XXXXXXXXX-X' >> $BASH_ENV
+      # - run:
+      #     name: add facebook pixel variable
+      #     command: echo 'export REACT_APP_FACEBOOK_PIXEL_ID=XXXXXXXXXXXXXXX' >> $BASH_ENV
       - run:
           name: build app
           command: CI="" yarn build
@@ -77,7 +83,7 @@ jobs:
 
   build-production:
     docker: 
-      - image: circleci/node:8.9.1
+      - image: circleci/node:8.11.2
     working_directory: ~/radon
     steps:
       - attach_workspace:
@@ -85,6 +91,12 @@ jobs:
       - run:
           name: add domain name variable
           command: echo 'export REACT_APP_DOMAIN_NAME=XXXXXX' >> $BASH_ENV
+      # - run:
+      #     name: add google analytics variable
+      #     command: echo 'export REACT_APP_GOOGLE_ANALYTICS_ID=UA-XXXXXXXXX-X' >> $BASH_ENV
+      # - run:
+      #     name: add facebook pixel variable
+      #     command: echo 'export REACT_APP_FACEBOOK_PIXEL_ID=XXXXXXXXXXXXXXX' >> $BASH_ENV
       - run:
           name: build app
           command: CI="" yarn build
@@ -102,13 +114,16 @@ jobs:
           at: ~/radon
       - run:
           name: gzip files
-          command: find build \( -iname '*' \) -exec gzip -9 -n {} \; -exec mv {}.gz {} \;
+          command: find build \( -iname '*' ! -iname '*.mp4' \) -exec gzip -9 -n {} \; -exec mv {}.gz {} \;
       - run:
           name: upload non-cached files to s3
           command: aws s3 sync build s3://XXXXXX/ --region eu-central-1 --exclude "static/*" --cache-control "max-age=0" --content-encoding "gzip" --delete
       - run:
           name: upload cached files to s3
-          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --cache-control "max-age=2592000" --content-encoding "gzip" --delete
+          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --exclude "media/*.mp4" --cache-control "max-age=2592000" --content-encoding "gzip" --delete
+      - run:
+          name: upload video files to s3
+          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --exclude "*" --include "media/*.mp4" --cache-control "max-age=2592000" --delete
 
   deploy-production:
     machine:
@@ -119,13 +134,16 @@ jobs:
           at: ~/radon
       - run:
           name: gzip files
-          command: find build \( -iname '*' \) -exec gzip -9 -n {} \; -exec mv {}.gz {} \;
+          command: find build \( -iname '*' ! -iname '*.mp4' \) -exec gzip -9 -n {} \; -exec mv {}.gz {} \;
       - run:
           name: upload non-cached files to s3
           command: aws s3 sync build s3://XXXXXX/ --region eu-central-1 --exclude "static/*" --cache-control "max-age=0" --content-encoding "gzip" --delete
       - run:
           name: upload cached files to s3
-          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --cache-control "max-age=2592000" --content-encoding "gzip" --delete
+          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --exclude "media/*.mp4" --cache-control "max-age=2592000" --content-encoding "gzip" --delete
+      - run:
+          name: upload video files to s3
+          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --exclude "*" --include "media/*.mp4" --cache-control "max-age=2592000" --delete
 
 workflows:
   version: 2
