@@ -2,3 +2,6 @@ src/registerServiceWorker.js
 src/setupTests.js
 wdio.conf.js
 build/*
+renderer/dist/*
+renderer/node_modules/*
+renderer/out/*

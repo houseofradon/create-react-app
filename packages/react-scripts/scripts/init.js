@@ -150,8 +150,13 @@ module.exports = function(
   console.log();
 
   extraDependencies.push(
+    'babel-polyfill',
     'react-router', 
-    'react-router-dom'
+    'react-router-dom',
+    'react-ga',
+    'react-helmet',
+    'react-with-analytics',
+    'universal-cookie'
   );
 
   const extraProc = spawn.sync(command, extraDependencies, { stdio: 'inherit' });
@@ -178,6 +183,7 @@ module.exports = function(
     'postcss-import',
     'react-test-renderer', 
     'selenium-standalone',
+    'stylelint-config-standard',
     'wdio-mocha-framework',
     'webdriverio'
   );

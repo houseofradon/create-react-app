@@ -1,11 +1,13 @@
 /* global document */
+import 'babel-polyfill';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 
-import App from './App/App';
+import App from './app';
 
+import './styles/Fonts.css';
 import './styles/Variables.css';
 import './styles/Theme.css';
 

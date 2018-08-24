@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { shallow } from 'enzyme';
-import Home from './Home';
+import Home from '.';
 
 it('Home renders without crashing', () => {
   const component = shallow(<Home />);

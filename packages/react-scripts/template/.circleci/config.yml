@@ -11,14 +11,28 @@ jobs:
           at: ~/radon
       - restore_cache:
           key: yarn-dependencies-{{ checksum "package.json" }}
+      - restore_cache:
+          key: npm-dependencies-{{ checksum "renderer/package.json" }}
       - run:
           name: install dependencies
           command: yarn install
+      - run:
+          name: install renderer dependencies
+          command: npm install
+          working_directory: ./renderer
+      - run:
+          name: build renderer
+          command: npm run build
+          working_directory: ./renderer
       - save_cache:
           key: yarn-dependencies-{{ checksum "package.json" }}
           paths:
             - ./node_modules
             - ~/.cache/yarn
+      - save_cache:
+          key: npm-dependencies-{{ checksum "renderer/package.json" }}
+          paths:
+            - ./renderer/node_modules
       - persist_to_workspace:
           root: .
           paths: 
@@ -104,6 +118,28 @@ jobs:
           root: .
           paths:
             - build
+  render:
+    docker:
+      - image: circleci/node:8.11.2-browsers
+    working_directory: ~/radon
+    steps:
+      - attach_workspace:
+          at: ~/radon
+      - run:
+          name: generate rendered pages
+          command: npm run render
+          working_directory: ./renderer
+      - run:
+          name: delete index.html from build folder
+          command: rm build/index.html
+      - run:
+          name: move rendered pages to build folder
+          command: mv ../renderer/out/* .
+          working_directory: ./build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
 
   deploy-staging:
     machine:
@@ -177,16 +213,22 @@ workflows:
             branches:
               only:
                 - master
-      - deploy-staging:
+      - render:
           requires:
             - build-staging
+            - build-production
+      - deploy-staging:
+          context: aws-credentials
+          requires:
+            - render
           filters:
             branches:
               only:
                 - develop
       - deploy-production:
+          context: aws-credentials
           requires:
-            - build-production
+            - render
           filters:
             branches:
               only:
