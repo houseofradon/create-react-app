@@ -1,9 +1,10 @@
 // @flow
 import React from 'react';
 import { 
-  Switch, Route, Redirect, withRouter
+  Switch, Route, Redirect, withRouter,
 } from 'react-router-dom';
 import withAnalytics, { initAnalytics } from 'react-with-analytics';
+import ga from 'react-ga';
 
 import Home from './home';
 import PrivacyPolicy from './privacy-policy';

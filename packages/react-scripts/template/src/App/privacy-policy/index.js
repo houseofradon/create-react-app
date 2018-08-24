@@ -2,8 +2,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 
-import MenuComponent from '../../components/menu';
-
 import './index.css';
 
 // TODO: replace with real policy
@@ -23,7 +21,6 @@ const PrivacyPolicy = () => (
       <meta property="og:url" content={`${DOMAIN_NAME}/privacy-policy`} />
       {/* TODO: add share image */}
     </Helmet>
-    <MenuComponent inverted />
     <div className="policy-container">
       <h1>
         Privacy Policy
