@@ -24,6 +24,9 @@ jobs:
           name: build renderer
           command: npm run build
           working_directory: ./renderer
+      - run:
+          name: mark scripts executable
+          command: chmod +x ./.circleci/set-stage-variable.sh
       - save_cache:
           key: yarn-dependencies-{{ checksum "package.json" }}
           paths:
@@ -60,7 +63,7 @@ jobs:
           name: flow
           command: yarn flow
 
-  eslint:
+  lint:
     docker: 
       - image: circleci/node:8.11.2
     working_directory: ~/radon
@@ -69,9 +72,12 @@ jobs:
           at: ~/radon
       - run:
           name: eslint
-          command: ./node_modules/.bin/eslint .
+          command: yarn eslint
+      - run:
+          name: stylelint
+          command: yarn stylelint
 
-  build-staging:
+  build:
     docker: 
       - image: circleci/node:8.11.2
     working_directory: ~/radon
@@ -79,45 +85,35 @@ jobs:
       - attach_workspace:
           at: ~/radon
       - run:
-          name: add domain name variable
-          command: echo 'export REACT_APP_DOMAIN_NAME=https://XXXXXX' >> $BASH_ENV
-      # - run:
-      #     name: add google analytics variable
-      #     command: echo 'export REACT_APP_GOOGLE_ANALYTICS_ID=UA-XXXXXXXXX-X' >> $BASH_ENV
-      # - run:
-      #     name: add facebook pixel variable
-      #     command: echo 'export REACT_APP_FACEBOOK_PIXEL_ID=XXXXXXXXXXXXXXX' >> $BASH_ENV
+          name: set stage variable
+          command: bash ./.circleci/set-stage-variable.sh
       - run:
           name: build app
-          command: CI="" yarn build
+          command: |
+            if [ "$RADON_STAGE" == "production" ]; then
+              export REACT_APP_DOMAIN_NAME="https://XXXXXX"
+              export REACT_APP_GOOGLE_ANALYTICS_ID="UA-XXXXXXXXX-X"
+              export REACT_APP_FACEBOOK_PIXEL_ID="XXXXXXXXXXXXXXX"
+            elif [ "$RADON_STAGE" == "staging" ]; then
+              export REACT_APP_DOMAIN_NAME="https://XXXXXX"
+              export REACT_APP_GOOGLE_ANALYTICS_ID="UA-XXXXXXXXX-X"
+              export REACT_APP_FACEBOOK_PIXEL_ID="XXXXXXXXXXXXXXX"
+            elif [ "$RADON_STAGE" == "development" ]; then
+              export REACT_APP_DOMAIN_NAME="https://XXXXXX"
+              export REACT_APP_GOOGLE_ANALYTICS_ID="UA-XXXXXXXXX-X"
+              export REACT_APP_FACEBOOK_PIXEL_ID="XXXXXXXXXXXXXXX"
+            else
+              echo "Invalid stage. Aborting..."
+              exit 1
+            fi
+
+            export CI=""
+            yarn build
       - persist_to_workspace:
           root: .
           paths:
             - build
 
-  build-production:
-    docker: 
-      - image: circleci/node:8.11.2
-    working_directory: ~/radon
-    steps:
-      - attach_workspace:
-          at: ~/radon
-      - run:
-          name: add domain name variable
-          command: echo 'export REACT_APP_DOMAIN_NAME=XXXXXX' >> $BASH_ENV
-      # - run:
-      #     name: add google analytics variable
-      #     command: echo 'export REACT_APP_GOOGLE_ANALYTICS_ID=UA-XXXXXXXXX-X' >> $BASH_ENV
-      # - run:
-      #     name: add facebook pixel variable
-      #     command: echo 'export REACT_APP_FACEBOOK_PIXEL_ID=XXXXXXXXXXXXXXX' >> $BASH_ENV
-      - run:
-          name: build app
-          command: CI="" yarn build
-      - persist_to_workspace:
-          root: .
-          paths:
-            - build
   render:
     docker:
       - image: circleci/node:8.11.2-browsers
@@ -141,7 +137,7 @@ jobs:
           paths:
             - build
 
-  deploy-staging:
+  deploy:
     machine:
       enabled: true
     working_directory: ~/radon
@@ -149,87 +145,82 @@ jobs:
       - attach_workspace:
           at: ~/radon
       - run:
-          name: gzip files
-          command: find build \( -iname '*' ! -iname '*.mp4' \) -exec gzip -9 -n {} \; -exec mv {}.gz {} \;
+          name: set stage variable
+          command: bash ./.circleci/set-stage-variable.sh
       - run:
-          name: upload non-cached files to s3
-          command: aws s3 sync build s3://XXXXXX/ --region eu-central-1 --exclude "static/*" --cache-control "max-age=0" --content-encoding "gzip" --delete
-      - run:
-          name: upload cached files to s3
-          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --exclude "media/*.mp4" --cache-control "max-age=2592000" --content-encoding "gzip" --delete
-      - run:
-          name: upload video files to s3
-          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --exclude "*" --include "media/*.mp4" --cache-control "max-age=2592000" --delete
-
-  deploy-production:
-    machine:
-      enabled: true
-    working_directory: ~/radon
-    steps:
-      - attach_workspace:
-          at: ~/radon
+          name: add s3 bucket name variable
+          command: |
+            if [ "$RADON_STAGE" == "production" ]; then
+              echo 'export S3_BUCKET_NAME=XXXXXX' >> $BASH_ENV
+            elif [ "$RADON_STAGE" == "staging" ]; then
+              echo 'export S3_BUCKET_NAME=XXXXXX' >> $BASH_ENV
+            elif [ "$RADON_STAGE" == "development" ]; then
+              echo "Skipping deployment"
+              circleci step halt
+            else
+              echo "Invalid stage. Aborting..."
+              exit 1
+            fi
       - run:
           name: gzip files
           command: find build \( -iname '*' ! -iname '*.mp4' \) -exec gzip -9 -n {} \; -exec mv {}.gz {} \;
       - run:
           name: upload non-cached files to s3
-          command: aws s3 sync build s3://XXXXXX/ --region eu-central-1 --exclude "static/*" --cache-control "max-age=0" --content-encoding "gzip" --delete
-      - run:
+          command: aws s3 sync build "s3://$S3_BUCKET_NAME/" --region eu-central-1 --exclude "*" --include "index.html" --include "service-worker.js" --cache-control "max-age=0" --content-encoding "gzip" --delete
+      -run:
           name: upload cached files to s3
-          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --exclude "media/*.mp4" --cache-control "max-age=2592000" --content-encoding "gzip" --delete
+          command: aws s3 sync build "s3://$S3_BUCKET_NAME/" --region eu-central-1 --exclude "static/*" --exclude "index.html" --exclude "service-worker.js" --include "*" --cache-control "max-age=7776000" --content-encoding "gzip" --delete
       - run:
-          name: upload video files to s3
-          command: aws s3 sync build/static s3://XXXXXX/static --region eu-central-1 --exclude "*" --include "media/*.mp4" --cache-control "max-age=2592000" --delete
+          name: upload static cached files to s3
+          command: aws s3 sync build/static "s3://$S3_BUCKET_NAME/static" --region eu-central-1 --exclude "media/*.mp4" --cache-control "max-age=7776000" --content-encoding "gzip" --delete
+      - run:
+          name: upload static video files to s3
+          command: aws s3 sync build/static "s3://$S3_BUCKET_NAME/static" --region eu-central-1 --exclude "*" --include "media/*.mp4" --cache-control "max-age=7776000" --delete
 
 workflows:
   version: 2
-  build-test-and-deploy:
+  build-test-lint-deploy:
     jobs:
-      - prepare
+      - prepare:
+          filters:
+            tags:
+              only: /prod-.*/
       - test:
           requires:
             - prepare
+          filters:
+            tags:
+              only: /prod-.*/
       - flow:
           requires:
             - prepare
-      - eslint:
+          filters:
+            tags:
+              only: /prod-.*/
+      - lint:
           requires:
             - prepare
-      - build-staging:
+          filters:
+            tags:
+              only: /prod-.*/
+      - build:
           requires:
             - test
             - flow
-            - eslint
+            - lint
           filters:
-            branches:
-              only:
-                - develop
-      - build-production:
-          requires:
-            - test
-            - flow
-            - eslint
-          filters:
-            branches:
-              only:
-                - master
+            tags:
+              only: /prod-.*/
       - render:
           requires:
-            - build-staging
-            - build-production
-      - deploy-staging:
+            - build
+          filters:
+            tags:
+              only: /prod-.*/
+      - deploy:
           context: aws-credentials
           requires:
-            - render
+            - build
           filters:
-            branches:
-              only:
-                - develop
-      - deploy-production:
-          context: aws-credentials
-          requires:
-            - render
-          filters:
-            branches:
-              only:
-                - master
+            tags:
+              only: /prod-.*/

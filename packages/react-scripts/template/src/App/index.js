@@ -1,14 +1,14 @@
 // @flow
 import React from 'react';
 
-import Routes from './Routes';
+import Routes from './routes';
 import PrivacyBanner from '../components/privacy-banner';
 
-import './index.css';
+import styles from './index.module.scss';
 
 const App = () => (
-  <div className="App">
-    <div className="app-content">
+  <div className={styles.app}>
+    <div className={styles.content}>
       <Routes />
     </div>
     <PrivacyBanner />

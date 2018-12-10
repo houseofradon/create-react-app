@@ -6,6 +6,7 @@ import mkdirp from 'mkdirp';
 import rimraf from 'rimraf';
 import Promise from 'bluebird';
 import handler from 'serve-handler';
+import { JSDOM } from 'jsdom';
 
 import uris from './uris';
 
@@ -33,7 +34,47 @@ const renderAndSave = uri => new Promise((resolve, reject) => {
 
     rendered.then((val) => {
       const fileToWrite = uri === '/' ? '/index.html' : `${uri}.html`;
-      writeFile(`${outputFolder}${fileToWrite}`, val, (err) => {
+
+      const dom = new JSDOM(val, {
+        url: `_ADD_SITE_DOMAIN_HERE_${uri}`,
+        contentType: 'text/html',
+      });
+
+      const styles = dom.window.document.head.getElementsByTagName('style');
+
+      for (let i = styles.length - 1; i >= 0; i--) {
+        dom.window.document.head.removeChild(styles[i]);
+      }
+
+      const scripts = dom.window.document.head.getElementsByTagName('script');
+
+      for (let i = scripts.length - 1; i >= 0; i--) {
+        dom.window.document.head.removeChild(scripts[i]);
+      }
+
+      const bodyElements = dom.window.document.body.childNodes;
+
+      for (let i = bodyElements.length - 1; i >= 0; i--) {
+        const currentElement = bodyElements[i];
+        const { src, id } = currentElement;
+
+        switch (currentElement.tagName) {
+          case 'SCRIPT':
+            if (!src.startsWith('_ADD_SITE_DOMAIN_HERE_/static/js/')) {
+              dom.window.document.body.removeChild(currentElement);
+            }
+            break;
+          case 'DIV':
+            if (id !== 'root') {
+              dom.window.document.body.removeChild(currentElement);
+            }
+            break;
+          default:
+            break;
+        }
+      }
+
+      writeFile(`${outputFolder}${fileToWrite}`, dom.serialize(), (err) => {
         if (err) {
           console.log(err);
           reject(err);
@@ -45,7 +86,6 @@ const renderAndSave = uri => new Promise((resolve, reject) => {
       });
     });
   }).catch((err) => {
-    console.log('Hello');
     console.log(err);
     reject(err);
   });
@@ -72,7 +112,7 @@ rimraf(outputFolder, () => {
   let sitemapContent = '';
 
   for (let i = 0; i < uris.length; i++) {
-    sitemapContent += `${process.env.REACT_APP_DOMAIN_NAME}${uris[i]}\n`;
+    sitemapContent += `_ADD_SITE_DOMAIN_HERE_${uris[i]}\n`;
   }
 
   mkdirp(outputFolder, (err) => {

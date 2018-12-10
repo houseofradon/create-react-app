@@ -1,12 +1,13 @@
 // @flow
 import React from 'react';
+import { Helmet } from 'react-helmet';
 
-import './index.css';
+import styles from './index.module.scss';
 
 const DOMAIN_NAME = process.env.REACT_APP_DOMAIN_NAME ? process.env.REACT_APP_DOMAIN_NAME : '';
 
 const Home = () => (
-  <div className="Home">
+  <div className={styles.home}>
     <Helmet>
       <title>
         Home

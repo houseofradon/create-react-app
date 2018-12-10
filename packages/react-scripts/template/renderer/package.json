@@ -1,6 +1,6 @@
 {
   "name": "renderer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Pre-render pages",
   "private": true,
   "main": "index.js",
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "bluebird": "^3.5.1",
+    "jsdom": "^13.0.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.2",
     "serve-handler": "^3.6.1",

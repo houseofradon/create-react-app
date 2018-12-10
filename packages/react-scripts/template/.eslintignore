@@ -1,6 +1,5 @@
-src/registerServiceWorker.js
+src/serviceWorker.js
 src/setupTests.js
-wdio.conf.js
 build/*
 renderer/dist/*
 renderer/node_modules/*

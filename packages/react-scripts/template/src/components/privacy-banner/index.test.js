@@ -7,6 +7,8 @@ import * as Analytics from 'react-with-analytics';
 import { isPrivacyBannerClosed } from '../../util';
 import PrivacyBanner from './index';
 
+import styles from './index.module.scss';
+
 describe('PrivacyBanner renders correctly', () => {
   const props = {
   };
@@ -22,10 +24,10 @@ describe('PrivacyBanner renders correctly', () => {
   });
 
   it('PrivacyBanner has correct structure', () => {
-    expect(component.find('div.max-width-container.grid-container').length).toEqual(1);
-    expect(component.find('div.col-full.inner-container').length).toEqual(1);
-    expect(component.find('p.privacy-text').length).toEqual(1);
-    expect(component.find('img.accept-btn').length).toEqual(1);
+    expect(component.find('div.max-width-container').length).toEqual(1);
+    expect(component.find(`div.${styles.innerContainer}`).length).toEqual(1);
+    expect(component.find('p').length).toEqual(1);
+    expect(component.find(`img.${styles.acceptButton}`).length).toEqual(1);
   });
 
   it('PrivacyBanner has correct initial state', () => {

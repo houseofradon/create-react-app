@@ -1,17 +1,17 @@
 /* global document */
 import 'babel-polyfill';
+import 'react-app-polyfill/ie9'; // For IE 9-11 support
+import 'react-app-polyfill/ie11'; // For IE 11 support
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 
 import App from './app';
+import * as serviceWorker from './serviceWorker';
 
-import './styles/Fonts.css';
-import './styles/Variables.css';
-import './styles/Theme.css';
-
-import registerServiceWorker from './registerServiceWorker';
+import './styles/fonts.scss';
+import './styles/theme.scss';
 
 ReactDOM.render(
   <BrowserRouter>
@@ -19,4 +19,8 @@ ReactDOM.render(
   </BrowserRouter>,
   document.getElementById('root'),
 );
-registerServiceWorker();
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: http://bit.ly/CRA-PWA
+serviceWorker.register();

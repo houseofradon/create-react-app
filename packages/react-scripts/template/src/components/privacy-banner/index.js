@@ -6,9 +6,10 @@ import { isPrivacyBannerClosed, onPrivacyBannerClosed } from '../../util';
 
 import Close from '../../assets/images/cross_white.svg';
 
-import './index.css';
+import styles from './index.module.scss';
 
 interface Props {
+
 }
 
 interface State {
@@ -36,17 +37,17 @@ class PrivacyBanner extends React.Component<Props, State> {
     } = this.state;
 
     return (
-      <div className={`privacy-banner ${hidden ? '' : 'visible'}`}>
-        <div className="max-width-container grid-container">
-          <div className="col-full inner-container">
-            <p className="privacy-text">
+      <div className={`${styles.privacyBanner} ${hidden ? '' : styles.visible}`}>
+        <div className="max-width-container">
+          <div className={styles.innerContainer}>
+            <p>
               We use cookies to give you the best experience possible. By continuing we’ll assume
               you’re on board with our
               <Link to="/privacy-policy">
                 &nbsp;cookie policy.
               </Link>
             </p>
-            <img src={Close} alt="close" className="accept-btn" onClick={this.closeButton} />
+            <img src={Close} alt="Close" className={styles.acceptButton} onClick={this.closeButton} />
           </div>
         </div>
       </div>

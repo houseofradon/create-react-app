@@ -2,7 +2,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 
-import './index.css';
+import styles from './index.module.scss';
 
 // TODO: replace with real policy
 
@@ -10,7 +10,7 @@ const DOMAIN_NAME = process.env.REACT_APP_DOMAIN_NAME ? process.env.REACT_APP_DO
 
 const PrivacyPolicy = () => (
 
-  <div className="PrivacyPolicy max-width-container">
+  <div className={`${styles.privacyPolicy} max-width-container`}>
     <Helmet>
       <title>
         Privacy Policy
@@ -21,7 +21,7 @@ const PrivacyPolicy = () => (
       <meta property="og:url" content={`${DOMAIN_NAME}/privacy-policy`} />
       {/* TODO: add share image */}
     </Helmet>
-    <div className="policy-container">
+    <div className={styles.policyContainer}>
       <h1>
         Privacy Policy
       </h1>

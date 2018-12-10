@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { 
+import {
   Switch, Route, Redirect, withRouter,
 } from 'react-router-dom';
 import withAnalytics, { initAnalytics } from 'react-with-analytics';

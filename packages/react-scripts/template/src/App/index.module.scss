@@ -1,0 +1,9 @@
+@import '../styles/variables';
+
+.app {
+  text-align: center;
+
+  .content {
+    color: $black;
+  }
+}

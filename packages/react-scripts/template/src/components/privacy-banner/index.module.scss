@@ -1,0 +1,45 @@
+@import '../../styles/variables';
+
+.privacyBanner {
+  width: 100%;
+  padding: 1rem 0;
+  background: $dark-grey;
+  color: $light-grey;
+  z-index: 3;
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  p {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    margin-right: 1rem;
+  }
+
+  a {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: $light-grey;
+  }
+
+  &.visible {
+    display: block;
+  }
+
+  .innerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    @media #{x-small} {
+      justify-content: flex-start;
+    }
+  }
+
+  .acceptButton {
+    width: 1rem;
+    height: 1rem;
+  }
+}
