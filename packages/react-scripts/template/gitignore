@@ -24,3 +24,4 @@ yarn-error.log*
 
 /renderer/out
 /renderer/dist
+/renderer/node_modules

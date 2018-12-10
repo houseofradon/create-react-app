@@ -220,7 +220,7 @@ workflows:
       - deploy:
           context: aws-credentials
           requires:
-            - build
+            - render
           filters:
             tags:
               only: /prod-.*/
