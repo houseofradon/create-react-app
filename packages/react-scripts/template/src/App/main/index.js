@@ -3,10 +3,10 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Switch, Route } from 'react-router-dom';
 import { useTransition, animated } from 'react-spring';
-import useRouter from './useRouter';
-import GlobalState from './global-state';
+import useRouter from '../useRouter';
+import GlobalState from '../global-state';
 
-import Home from './home';
+import Home from '../home';
 
 import styles from './index.module.scss';
 
@@ -28,27 +28,27 @@ export default function Main() {
 
   const helmetValues = (
     <Helmet>
-        <title>
+      <title>
         Home
-        </title>
-        <meta name="description" content="Home" />
-        <meta property="og:title" content="Home" />
-        <meta property="og:description" content="Home" />
-        <meta property="og:url" content={`${DOMAIN_NAME}`} />
-        {/* TODO: add share image */}
+      </title>
+      <meta name="description" content="Home" />
+      <meta property="og:title" content="Home" />
+      <meta property="og:description" content="Home" />
+      <meta property="og:url" content={`${DOMAIN_NAME}`} />
+      {/* TODO: add share image */}
     </Helmet>
   );
 
   return transitions.map(({ item, props, key }, i) => (
     <div className={styles.main}>
-        {helmetValues}
-        <GlobalState.GlobalStateProvider key={`globalState-${i}`}>
-            <animated.div key={key} style={props}>
-                <Switch location={item}>
-                <Route path="/" exact render={() => (<Home />)} />
-                </Switch>
-            </animated.div>
-        </GlobalState.GlobalStateProvider>
+      {helmetValues}
+      <GlobalState.GlobalStateProvider key={`globalState-${i}`}>
+        <animated.div key={key} style={props}>
+          <Switch location={item}>
+            <Route path="/" exact render={() => (<Home />)} />
+          </Switch>
+        </animated.div>
+      </GlobalState.GlobalStateProvider>
     </div>
   ));
 }

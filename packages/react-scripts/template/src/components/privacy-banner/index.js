@@ -1,7 +1,6 @@
 // @flow
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { trackEvent } from 'react-with-analytics';
 import { isPrivacyBannerClosed, onPrivacyBannerClosed } from '../../util';
 
 import Close from '../../assets/images/cross_white.svg';
@@ -22,7 +21,7 @@ class PrivacyBanner extends React.Component<Props, State> {
   };
 
   closeButton = () => {
-    trackEvent('Privacy', 'Privacy Banner Closed', '');
+    // trackEvent('Privacy', 'Privacy Banner Closed', '');
 
     onPrivacyBannerClosed();
 

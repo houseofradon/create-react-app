@@ -7,7 +7,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import CustomBrowserRouter from './CustomBrowserRouter';
 
-import App from './app';
+import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 import './styles/fonts.scss';
