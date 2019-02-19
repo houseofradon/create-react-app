@@ -3,7 +3,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Switch, Route } from 'react-router-dom';
 import { useTransition, animated } from 'react-spring';
-import useRouter from '../useRouter';
+import useRouter from '../use-router';
 import GlobalState from '../global-state';
 
 import Home from '../home';
