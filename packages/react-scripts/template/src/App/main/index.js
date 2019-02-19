@@ -39,16 +39,22 @@ export default function Main() {
     </Helmet>
   );
 
-  return transitions.map(({ item, props, key }, i) => (
+  const transitionsMap = transitions.map(({ item, props, key }) => (
+    <animated.div key={key} style={props}>
+      <Switch location={item}>
+        <Route path="/" exact render={() => (<Home />)} />
+      </Switch>
+    </animated.div>
+  ));
+
+  return (
     <div className={styles.main}>
       {helmetValues}
-      <GlobalState.GlobalStateProvider key={`globalState-${i}`}>
-        <animated.div key={key} style={props}>
-          <Switch location={item}>
-            <Route path="/" exact render={() => (<Home />)} />
-          </Switch>
-        </animated.div>
-      </GlobalState.GlobalStateProvider>
+      <div className={styles.mainContainer}>
+        <GlobalState.GlobalStateProvider>
+          {transitionsMap}
+        </GlobalState.GlobalStateProvider>
+      </div>
     </div>
-  ));
+  );
 }
