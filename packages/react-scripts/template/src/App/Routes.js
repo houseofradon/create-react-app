@@ -1,27 +1,17 @@
 // @flow
 import React from 'react';
 import {
-  Switch, Route, Redirect, withRouter,
+  Switch, Route,
 } from 'react-router-dom';
-import withAnalytics, { initAnalytics } from 'react-with-analytics';
-import ga from 'react-ga';
 
-import Home from './home';
+import Main from './main';
 import PrivacyPolicy from './privacy-policy';
-
-const ANALYTICS_ID = process.env.REACT_APP_GOOGLE_ANALYTICS_ID
-  ? process.env.REACT_APP_GOOGLE_ANALYTICS_ID : 'UA-XXXXXXXXX-X';
-
-initAnalytics(ANALYTICS_ID);
-ga.set({ displayFeaturesTask: null });
-ga.set({ anonymizeIp: true });
 
 const Routes = () => (
   <Switch>
-    <Route exact path="/" component={Home} />
     <Route exact path="/privacy-policy" component={PrivacyPolicy} />
-    <Redirect from="*" to="/" />
+    <Route path="/" component={Main} />
   </Switch>
 );
 
-export default withRouter(withAnalytics(Routes));
+export default Routes;

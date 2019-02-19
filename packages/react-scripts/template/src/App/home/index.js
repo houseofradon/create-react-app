@@ -1,25 +1,23 @@
 // @flow
-import React from 'react';
+import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
+
+import GlobalStateTypes from '../global-state-types';
+
+import GlobalState from '../global-state';
 
 import styles from './index.module.scss';
 
-const DOMAIN_NAME = process.env.REACT_APP_DOMAIN_NAME ? process.env.REACT_APP_DOMAIN_NAME : '';
+export default function Home() {
+  const { state, dispatch } = useContext(GlobalState.GlobalContext);
 
-const Home = () => (
-  <div className={styles.home}>
-    <Helmet>
-      <title>
-        Home
-      </title>
-      <meta name="description" content="Home" />
-      <meta property="og:title" content="Home" />
-      <meta property="og:description" content="Home" />
-      <meta property="og:url" content={`${DOMAIN_NAME}`} />
-      {/* TODO: add share image */}
-    </Helmet>
-    Hello World
-  </div>
-);
+  const addProjectDispatch = project => () => dispatch({ type: GlobalStateTypes.ADD_PROJECT, payload: project });
+
+  return (
+    <div className={styles.home}>
+      Hello World
+    </div>
+  );
+};
 
 export default Home;

@@ -5,7 +5,7 @@ import 'react-app-polyfill/ie11'; // For IE 11 support
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import CustomBrowserRouter from './CustomBrowserRouter';
 
 import App from './app';
 import * as serviceWorker from './serviceWorker';
@@ -14,9 +14,9 @@ import './styles/fonts.scss';
 import './styles/theme.scss';
 
 ReactDOM.render(
-  <BrowserRouter>
+  <CustomBrowserRouter>
     <App />
-  </BrowserRouter>,
+  </CustomBrowserRouter>,
   document.getElementById('root'),
 );
 

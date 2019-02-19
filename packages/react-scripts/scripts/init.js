@@ -215,13 +215,13 @@ module.exports = function(
   extraDependencies.push(
     'babel-polyfill',
     'react-app-polyfill',
-    'react-router', 
-    'react-router-dom',
-    'react-ga',
+    'react-router@next', 
+    'react-router-dom@next',
     'react-helmet',
-    'react-with-analytics',
     'universal-cookie',
     'node-sass',
+    'react-spring',
+    'react-with-gesture',
   );
 
   const extraProc = spawn.sync(command, extraDependencies, { stdio: 'inherit' });
@@ -241,6 +241,7 @@ module.exports = function(
     'react-test-renderer', 
     'stylelint',
     'stylelint-config-standard',
+    'eslint-plugin-react-hooks',
   );
 
   const extraDevProc = spawn.sync(command, extraDevDependencies, { stdio: 'inherit' });
